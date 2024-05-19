@@ -1,5 +1,8 @@
 # ZOLT.AI.N LIVES!
-## An AWS Amplify Gen2 Demo
+### An AWS Amplify Gen2 Demo
+
+
+## Overview 
 
 
 *Author’s notes:*
@@ -13,6 +16,9 @@
 
 
 *This demo assumes at least a beginner level of experience coding with Typescript and familiarity with common tools like NPM.
+
+
+*I’m using SvelteKit here, which is an awesome, modern JavaScript frontend framework built for performance and great developer experience. I won’t go deep into the details of, but you can find out everything you need to know at[svelte.dev](https://svelte.dev/).
 
 
 *This demo is named after the ZOLTAN fortune telling vending machine made famous in the movie “Big”.*
@@ -84,6 +90,76 @@ Note the url it spits out. Open this in your browser:
 
 
 `  ➜  Local:   http://localhost:5175/`
+
+### Add your Amplify Gen2 backend
+
+Run this command from your application’s root directory. Use the default where to install option:
+
+
+`npm create amplify@latest`
+
+Deploy your personal development sandbox. Note the change of output directory. We need the Amplify output file in a spot where SvelteKit can find it. This is where all your AWS resources will be spun up. It will take a few minutes for the first deployment:
+
+
+`npx ampx sandbox --outputs-out-dir ./src/lib`
+
+At this point, you now have a fully functional dev environment with both frontend and backend hot reloading. Nice!
+
+## Having A Look Around
+Dig into to the `./amplify` directory. You’ll note the auth and data directories have already been created with a corresponding resource file in it.
+
+
+Auth has the `defineAuth()` function preset. If you hop into the AWS web console and navigate to Cognito, you’ll see that a user pool has been created.
+
+
+We’ll be doing most of our work on the “data” side. Here you’ll see a sample “Todo” schema has been created. In the web console, you’ll find a DynamoDB table has been created **and** and AppSync GraphQL API has been created to handle your requests.
+
+
+Note, this is all automatic!
+
+
+## Let’s Talk Requirements
+I guess we should decide what this app is going to do, so we can make some sensible decisions about how to design it:
+
+
+This will be a fortune telling app where a user clicks a button and receives a mysterious prediction from the spirits.
+By “spirits” we mean an LLM.
+Login is not required (nor supported).
+We want to track the user’s first and most recent prediction date.
+The user should be able to see their last few days of predictions, assuming they don’t clear session cookies.
+
+
+Based off these requirements, we can leave the auth alone and just use the “guest access” that comes built into Cognito.
+
+
+Let’s get started on configuring our data.
+
+
+## Schema Setup
+We can see a good application of a one-to-many relationship between a user (and their metadata) and their predictions.
+
+
+Check out the edited resources file to see how this is set up.
+
+
+## SvelteKit Scaffolding
+
+We’ll create a quick UX scaffold for our app. This consists of our “homepage” where we’ll interact with ZOLT.AI.N and a “page module” that will handle requesting and loading data.
+
+
+I won’t do a full write up on this, but you can see the documentation inline in the following files:
+
+
+The page module contains our first calls to our backend. We’ll do an `Auth.fetchAuthSession()` call to get the session ID of our current user. This is “guest access” … the user isn’t logged in, but we are still tracking them with a unique identifier stored as a cookie. We’ll use this later to match the user with their fortunes.
+
+
+Also note, we did ZERO configuration. It just works.
+
+
+
+
+
+
 
 
 
