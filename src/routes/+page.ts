@@ -15,8 +15,18 @@ export async function load() {
 	const identityId = (await fetchAuthSession()).identityId || '';
 
 	//Call the API for any of the user's previous fortunes
+	const fortunes = client.models.Fortune.list({
+		filter: {
+			identityId: {
+				eq: identityId
+			}
+		}
+	});
 
 	return {
-		identityId
+		identityId,
+		streams: {
+			fortunes
+		}
 	};
 }

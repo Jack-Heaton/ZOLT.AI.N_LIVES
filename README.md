@@ -91,21 +91,30 @@ Note the url it spits out. Open this in your browser:
 
 `  ➜  Local:   http://localhost:5175/`
 
+
 ### Add your Amplify Gen2 backend
+
 
 Run this command from your application’s root directory. Use the default where to install option:
 
 
 `npm create amplify@latest`
 
+
 Deploy your personal development sandbox. Note the change of output directory. We need the Amplify output file in a spot where SvelteKit can find it. This is where all your AWS resources will be spun up. It will take a few minutes for the first deployment:
 
 
 `npx ampx sandbox --outputs-out-dir ./src/lib`
 
+
 At this point, you now have a fully functional dev environment with both frontend and backend hot reloading. Nice!
 
+
+
+
 ## Having A Look Around
+
+
 Dig into to the `./amplify` directory. You’ll note the auth and data directories have already been created with a corresponding resource file in it.
 
 
@@ -119,6 +128,8 @@ Note, this is all automatic!
 
 
 ## Let’s Talk Requirements
+
+
 I guess we should decide what this app is going to do, so we can make some sensible decisions about how to design it:
 
 
@@ -136,13 +147,84 @@ Let’s get started on configuring our data.
 
 
 ## Schema Setup
+Amplify’s data is backed by AppSync which is a serverless GraphQL API. If you’ve worked any with GQL, you’ll know it’s highly schema dependent and it’s own skill set to write. Gen2 does a fine job of abstracting that away into TypeScript code and handles building out the API and all of your types for you.
+
+
+Check out the edited data resource file to see how this is set up:
+
+
+```typescript
+import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+
+
+const schema = a.schema({
+ //Users based on guest access session id
+ User: a
+   .model({
+     //Session Id, which we'll get from the user's guest session
+     identityId: a.id().required(),
+
+
+     //First fortune timestamp with a default value defined.
+     firstFortuneTimestamp: a.timestamp().default(Date.now() / 1000),
+
+
+     //Last prediction timestamp
+     mostRecent: a.timestamp(),
+
+
+     //Users may have many fortunes
+     fortunes: a.hasMany('Fortune', 'identityId')
+   })
+   .authorization((allow) => [allow.publicApiKey()]),
+
+
+ Fortune: a
+   .model({
+     //Fortune Id
+     fortuneId: a.id().required(),
+
+
+     //Fortune string
+     fortune: a.string(),
+
+
+     //Users may have many fortunes
+     user: a.belongsTo('User', 'identityId'),
+
+
+     //The user the fortune belongs to
+     identityId: a.id().required(),
+
+
+     //Fortune timestamp with a default value defined.
+     ts: a.timestamp().default(Date.now() / 1000)
+   })
+   .authorization((allow) => [allow.publicApiKey()])
+});
+
+
+export type Schema = ClientSchema<typeof schema>;
+
+
+export const data = defineData({
+ schema,
+ authorizationModes: {
+   defaultAuthorizationMode: 'apiKey',
+   apiKeyAuthorizationMode: { expiresInDays: 30 }
+ }
+});
+```
+
+
+By way of a quick explanation, we’re setting up `User` and `Fortune` GQL/TypeScript types here with their associated properties. We’re modeling them with a one-to-many relationship (each User may have many Fortunes). We’re  
+
+
 We can see a good application of a one-to-many relationship between a user (and their metadata) and their predictions.
 
 
-Check out the edited resources file to see how this is set up.
-
-
 ## SvelteKit Scaffolding
+
 
 We’ll create a quick UX scaffold for our app. This consists of our “homepage” where we’ll interact with ZOLT.AI.N and a “page module” that will handle requesting and loading data.
 
