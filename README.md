@@ -728,10 +728,10 @@ That’s it! You now have a functioning fortune teller app written in TypeScript
 
 ## Takeaways
 
-AWS Amplify Gen2 hit general availability earlier this month and it it looks like a very good start to a useful toolchain. I could see it being immediately and immensely useful to anyone doing rapid prototyping of apps.
+* AWS Amplify Gen2 hit general availability earlier this month and it it looks like a very good start to a useful toolchain. I could see it being immediately and immensely useful to anyone doing rapid prototyping of apps.
 
-Gen2 marries being a fast (and fun!) developer experience with the power to pull in the big guns of CDK when you need it. Also, breaking into CDK doesn’t ruin the experience . . . you never feel painted into a corner.
+* Gen2 marries being a fast (and fun!) developer experience with the power to pull in the big guns of CDK when you need it. Also, breaking into CDK doesn’t ruin the experience . . . you never feel painted into a corner.
 
-I did run into a few cyclical dependency issues while doing some fairly heinous stuff that I ended up cutting from this demo. I expect the would not actually show up in real life and, if they did, they could probably be resolved with some CDK tricks.
+* I did run into a few cyclical dependency issues while doing some fairly heinous stuff that I ended up cutting from this demo. I expect the would not actually show up in real life and, if they did, they could probably be resolved with some CDK tricks.
 
-Need to check out the mobile libraries next!
+* Need to check out the mobile libraries next!
