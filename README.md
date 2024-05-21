@@ -89,12 +89,12 @@ Note, this is all automatic!
 
 I guess we should decide what this app is going to do, so we can make some sensible decisions about how to design it:
 
-This will be a fortune telling app where a user clicks a button and receives a mysterious prediction from the spirits.
-By “spirits” we mean an LLM.
-Login is not required (nor supported).
-We want to track the user’s first and most recent prediction date.
-The user should be able to see their last few days of predictions, assuming they don’t clear session cookies.
-We want to collect and display a real-time count of all the fortunes created by the app by all users. 
+* This will be a fortune telling app where a user clicks a button and receives a mysterious prediction from the spirits.
+* By “spirits” we mean an LLM.
+* Login is not required (nor supported).
+* We want to track the user’s first and most recent prediction date.
+* The user should be able to see their last few days of predictions, assuming they don’t clear session cookies.
+* We want to collect and display a real-time count of all the fortunes created by the app by all users. 
 
 Based off these requirements, we can leave the auth alone and just use the “guest access” that comes built into Cognito.
 
