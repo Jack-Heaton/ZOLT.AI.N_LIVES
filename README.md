@@ -6,15 +6,15 @@
 *Author’s notes:*
 *Amplify Gen2 is still in preview and anything and everything here is subject to change. That being said, it is in very good shape as is.
 
-*This demo is written from the perspective of a full-stack TypeScript developer who spends most of their time working with AWS Cloud Development Kit and AppSync. I’ll be running down some rabbit-holes that a frontend developer probably won’t care about.*
+* This demo is written from the perspective of a full-stack TypeScript developer who spends most of their time working with AWS Cloud Development Kit and AppSync. I’ll be running down some rabbit-holes that a frontend developer probably won’t care about.*
 
-*Amplify has features like hosting and deployment support that will not be covered in this demo.*
+* Amplify has features like hosting and deployment support that will not be covered in this demo.*
 
-*This demo assumes at least a beginner level of experience coding with Typescript and familiarity with common tools like NPM.
+* This demo assumes at least a beginner level of experience coding with Typescript and familiarity with common tools like NPM.
 
-*I’m using SvelteKit here, which is an awesome, modern JavaScript frontend framework built for performance and great developer experience. I won’t go deep into the details of, but you can find out everything you need to know at[svelte.dev](https://svelte.dev/).
+* I’m using SvelteKit here, which is an awesome, modern JavaScript frontend framework built for performance and great developer experience. I won’t go deep into the details of, but you can find out everything you need to know at[svelte.dev](https://svelte.dev/).
 
-*This demo is named after the ZOLTAN fortune telling vending machine made famous in the movie “Big”.*
+* This demo is named after the ZOLTAN fortune telling vending machine made famous in the movie “Big”.*
 
 Amplify AWS's Developer Experience (DX) platform that focuses on allowing frontend (or really, all) developers to quickly build and deploy cloud-powered apps. It offers SDKs for all the most popular web and mobile frameworks. This overview will focus on TypeScript/JavaScript and SvelteKit ( which is not officially supported, but seems to work fine).
 
