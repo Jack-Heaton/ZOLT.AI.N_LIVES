@@ -18,16 +18,25 @@ export async function load() {
 	const user = (await client.models.User.get({ identityId })).data;
 
 	//Get current stats
-	const count = (await client.models.Count.list()).data[0] || { count: 0 };
+	const count = (
+		await client.models.Count.get({
+			id: `GLOBAL`
+		})
+	).data || {
+		id: `GLOBAL`,
+		count: 0
+	};
 
-	//Lasy load API for any of the user's previous fortunes
+	//Lazy load API for any of the user's previous fortunes
 	const fortunes = client.models.Fortune.list({
 		filter: {
 			identityId: {
 				eq: identityId
 			}
-		}
-	}) as Promise<{ data: Schema['Fortune'][] }>;
+		},
+		limit: 10,
+		selectionSet: [`fortune`, `ts`]
+	});
 
 	return {
 		client,

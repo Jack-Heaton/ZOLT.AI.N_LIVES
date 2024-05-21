@@ -1,0 +1,89 @@
+<script lang="ts">
+	import type { Schema } from '../../amplify/data/resource';
+	import Stats from './Stats.svelte';
+	import HeaderImage from './HeaderImage.svelte';
+	import '../app.css';
+	import History from './History.svelte';
+
+	export let data;
+
+	let newFortunes: Partial<Schema['Fortune']>[] = [];
+
+	let gettingFortune: Promise<string | undefined>;
+
+	//Dummy function for fetching fortune. We'll do this the ugly way.
+	async function getFortune() {
+		//Add new fortune to datastore
+		const fortuneCreate = await data.client.models.Fortune.create({
+			identityId: data.identityId,
+			fortune: 'You will be rich!'
+		});
+
+		//Add new fortune to the UX list
+		if (fortuneCreate.data && fortuneCreate.data.id) {
+			newFortunes = [
+				{
+					id: fortuneCreate.data.id,
+					fortune: fortuneCreate.data.fortune
+				} as Partial<Schema['Fortune']>,
+				...newFortunes
+			];
+		}
+
+		//Create or update the user record
+		await data.client.models.User[data.user?.identityId ? 'update' : 'create']({
+			identityId: data.user?.identityId || data.identityId,
+			mostRecent: Math.floor(Date.now() / 1000),
+			fortuneCount: (data.user?.fortuneCount || 0) + 1
+		});
+
+		//Create or update the stats
+		await data.client.models.Count[data.count?.id ? 'update' : 'create']({
+			id: data.count?.id,
+			count: (data.count?.count || 0) + 1
+		});
+
+		return fortuneCreate.data?.fortune as string;
+	}
+</script>
+
+<div class="container">
+	<HeaderImage />
+
+	<div class="row justify-content-center">
+		<div class="col-6">
+			<div class="text-center mb-3">
+				{#await gettingFortune}
+					<div class="creepster-regular" style:font-size="2em">
+						<em>ZOLT.AI.N CONSULTS THE SPIRITS!</em>
+					</div>
+				{:then fortune}
+					{#if fortune}
+						<div class="creepster-regular">
+							<h1>{fortune}</h1>
+						</div>
+					{/if}
+
+					<p>
+						<button
+							on:click={() => (gettingFortune = getFortune())}
+							class="btn btn-outline-light btn-lg"
+							>Ascertain my future, oh powerful <span class="creepster-regular">ZOLT.AI.N</span
+							></button
+						>
+					</p>
+				{/await}
+			</div>
+
+			<hr />
+			<div class="text-center">
+				<p>
+					<Stats {data} />
+				</p>
+			</div>
+
+			<hr />
+			<History {data} {newFortunes} />
+		</div>
+	</div>
+</div>

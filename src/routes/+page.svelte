@@ -1,78 +1,67 @@
 <script lang="ts">
-	import { Amplify } from 'aws-amplify';
-	import outputs from '$lib/amplify_outputs.json';
-	import { generateClient } from 'aws-amplify/api';
 	import type { Schema } from '../../amplify/data/resource';
-	import { fetchAuthSession } from 'aws-amplify/auth';
-	import { onMount } from 'svelte';
+	import Stats from './Stats.svelte';
+	import HeaderImage from './HeaderImage.svelte';
+	import '../app.css';
+	import History from './History.svelte';
 
-	// //Configure Amplify based on outputs
-	// Amplify.configure(outputs);
-
-	// //Create data client
-	// const client = generateClient<Schema>();
 	export let data;
 
-	let newFortunes: Schema['Fortune'][] = [];
+	let newFortunes: Partial<Schema['Fortune']>[] = [];
 
 	let gettingFortune: Promise<string | undefined>;
 
-	//Dummy function for fetching fortune. We'll do this the ugly way.
+	//Calls our PredictFortune mutation
 	async function getFortune() {
-		const fortuneCreate = await data.client.models.Fortune.create({
-			identityId: data.identityId,
-			fortune: 'You will be rich!'
-		});
+		const fortune = (
+			await data.client.mutations.PredictFortune({
+				identityId: data.identityId
+			})
+		)?.data;
 
-		//Update the user record
-		await data.client.models.User.update({
-			identityId: data.identityId,
-			mostRecent: Math.floor(Date.now() / 1000),
+		newFortunes = [fortune as Partial<Schema['Fortune']>, ...newFortunes];
 
-			fortuneCount: (data.user?.fortuneCount || 0) + 1
-		});
-
-		//Update the stats
-		await data.client.models.Count.update({
-			id: data.count.id,
-			count: (data.count?.count || 0) + 1
-		});
-
-		return fortuneCreate.data?.fortune as string;
-	}
-
-	//Just a helper function for type assignment
-	function concatFortuneLists(oldFortunes: any[]) {
-		return [
-			...(newFortunes as Schema['Fortune'][]),
-			...(oldFortunes as Schema['Fortune'][])
-		] as any[];
+		return fortune?.fortune || undefined;
 	}
 </script>
 
-{#await gettingFortune}
-	<em>Zolt.AI.n consults the spirits!</em>
-{:then fortune}
-	{#if fortune}
-		<h5>{fortune}</h5>
-	{/if}
+<div class="container">
+	<HeaderImage />
 
-	<p>
-		<button on:click={() => (gettingFortune = getFortune())}
-			>Ascertain my future, oh powerful Zolt.AI.n</button
-		>
-	</p>
-{/await}
+	<div class="row justify-content-center">
+		<div class="col-6" style="font-size:1rem">
+			<div class="text-center mb-5">
+				{#await gettingFortune}
+					<div class="creepster-regular" style="font-size:4rem">
+						<div><em>ZOLT.AI.N CONSULTS THE SPIRITS!</em></div>
+					</div>
+				{:then fortune}
+					{#if fortune}
+						<div class="creepster-regular mb-5" style="font-size:2rem">
+							{fortune}
+						</div>
+					{/if}
 
-<hr />
-Previous predictions:
-{#await data.streams.fortunes}
-	<p><em>Fetching your previous fortunes ...</em></p>
-{:then oldFortunes}
-	{@const fortuneList = concatFortuneLists(oldFortunes.data)}
-	<ul>
-		{#each fortuneList as f}
-			<li>{f.fortune}</li>
-		{/each}
-	</ul>
-{/await}
+					<p>
+						<button
+							on:click={() => (gettingFortune = getFortune())}
+							class="btn btn-outline-light btn-lg"
+							>Ascertain my future, oh powerful <span class="creepster-regular">ZOLT.AI.N</span
+							></button
+						>
+					</p>
+				{/await}
+			</div>
+
+			<hr />
+			<div class="text-center">
+				<p>
+					<Stats {data} />
+				</p>
+			</div>
+
+			<hr />
+			<History {data} {newFortunes} />
+		</div>
+	</div>
+</div>

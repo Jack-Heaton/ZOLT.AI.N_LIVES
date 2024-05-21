@@ -38,6 +38,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@aws-appsync/utils": "^1.7.0",
+		"@aws-sdk/client-appsync": "^3.577.0",
+		"@aws-sdk/client-dynamodb": "^3.577.0",
+		"@aws-sdk/lib-dynamodb": "^3.577.0",
 		"aws-amplify": "^6.3.2"
 	}
 }

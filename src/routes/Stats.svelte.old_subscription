@@ -1,0 +1,36 @@
+<script lang="ts">
+	import { onDestroy, onMount } from 'svelte';
+
+	export let data;
+
+	let countSync: any;
+	let userSync: any;
+
+	///Subscript to our User and Stats data
+	onMount(async () => {
+		countSync = data.client.models.Count.observeQuery({
+			filter: { id: { eq: data.count.id } }
+		}).subscribe({
+			next: (event: any) => {
+				data.count = event.items?.[0];
+			}
+		});
+
+		userSync = data.client.models.User.observeQuery({
+			filter: { identityId: { eq: data.identityId } }
+		}).subscribe({
+			next: (event: any) => {
+				data.user = event.items?.[0];
+			}
+		});
+	});
+
+	//Good practice to always tear down your persistent connections
+	//when you unmount a component
+	onDestroy(() => {
+		countSync?.unsubscribe();
+		userSync?.unsubscribe();
+	});
+</script>
+
+Fortunes told: {data.count?.count || 0}, Fortunes told to you: {data.user?.fortuneCount || 0}
