@@ -1,6 +1,23 @@
 # ZOLT.AI.N LIVES!
 ### An AWS Amplify Gen2 Demo
 
+**An LLM fortune teller, built quickly on AWS to show that anyone can build on AWS.**
+
+I built this for a talk at the local AWS User Group in May 2024. The pitch was that you don't need to be a cloud specialist to ship a real, serverless, AI-powered app on AWS. Write some TypeScript, let AWS Amplify Gen2 generate the backend, and drop down into CDK only when you need something Amplify doesn't do out of the box.
+
+Click the button and ZOLT.AI.N, named after the fortune-telling machine from the movie *Big*, consults "the spirits" (an LLM on Amazon Bedrock) and hands you a fortune. Along the way the app shows:
+
+- **A code-first backend.** Amplify Gen2 turns a TypeScript schema into an AppSync GraphQL API, DynamoDB tables and fully typed client code.
+- **Guest access** through Cognito, so there's no login.
+- **Real-time updates.** A global fortune counter and per-user stats stream to every open browser through AppSync subscriptions.
+- **Calling Bedrock without a Lambda.** An AppSync HTTP data source, configured in a few lines of CDK, signs requests straight to Bedrock. A pipeline of AppSync JavaScript resolvers then gets the fortune, saves it and updates the counts in one round trip.
+
+**Stack:** SvelteKit · AWS Amplify Gen2 · AWS AppSync (JavaScript pipeline resolvers) · Amazon DynamoDB · Amazon Cognito · Amazon Bedrock · AWS CDK
+
+The rest of this README is the step-by-step walkthrough from the talk. It's a snapshot from mid-2024: Amplify Gen2 was brand new, and the Claude Instant model the demo calls has since been retired on Bedrock. To run it today, change `MODEL_ID` in `amplify/data/resolvers/bedrockDatasource.ts` to a current model, and update the request and response format in the resolvers to match.
+
+---
+
 ## Overview 
 
 *Author’s notes:*
